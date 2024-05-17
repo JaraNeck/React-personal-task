@@ -1,5 +1,4 @@
 import { useState } from "react";
-import "./App.css";
 
 function App() {
   const initialState = [
@@ -9,91 +8,96 @@ function App() {
       content: "리액트 기초를 공부해 봅시다.",
       isDone: false,
     },
+    {
+      id: 2,
+      title: "리액트 공부하기",
+      content: "리액트 기초를 공부해 봅시다.",
+      isDone: true,
+    },
   ];
-  const [todo, setTodo] = useState(initialState);
-
-  // TODO: 이름과 나이를 각각 상태로 정의하세요. 초기값은 빈문자열("")입니다.
+  const [todos, setTodos] = useState(initialState);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
   const addTodo = (e) => {
     e.preventDefault();
-    // TODO: 이름과 나이가 모두 입력되지 않았을 때는 alert 처리하고 함수를 종료하세요. 논리합연산자 (||) 를 이용하세요.
-    if (!title || !content) {
+    if (!title.trim() || !content.trim()) {
       alert("제목과 내용을 입력하세요");
       return;
     }
-    // TODO: 사용자 리스트 상태를 업데이트
-    const newtodo = {
+    const newTodo = {
       id: Date.now(),
-      title: title,
-      content: content,
+      title,
+      content,
       isDone: false,
     };
-    setTodo([...todo, newtodo]);
-    // 이름 나이 초기화
+    setTodos([...todos, newTodo]);
     setTitle("");
     setContent("");
   };
 
+  // 삭제, 완료 버튼
   const removeTodo = (id) => {
-    // TODO: filter 메소드를 사용해서 사용자 삭제 로직을 구현해 보세요.
-    setTodo(
-      todo.filter(function (todo) {
-        return todo.id !== id;
-      })
+    setTodos(todos.filter((todo) => todo.id !== id));
+  };
+
+  const toggleTodo = (id) => {
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, isDone: !todo.isDone } : todo
+      )
     );
   };
 
-  // 완료 버튼 활성화
-  const completeTodo = (id) => {
-    setTodo(
-      todo.filter(function (todo) {
-        return todo.id === id;
-      })
-    );
-  };
-
-  const logtodo = () => {};
+  // 하나의 컴포넌트
   return (
     <>
-      <p>my todo list</p>
-      <form onSubmit={addTodo}>
-        {/* TODO: input 태그에 value, onChange 속성을 추가해서 이름과 나이의 상태와 상태변경 로직을 연결하세요 */}
-        제목{" "}
-        <input
-          type="text"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        내용
-        <input
-          type="text"
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-        />
-        <button type="submit">추가하기</button>
-        <p>Working</p>
-      </form>
-      <ul>
-        {/* TODO: map 메소드를 이용해서 todo 리스트를 렌더링하세요.  */}
-        {todo.map((todo) => (
-          <div key={todo.id}>
-            {todo.title}
-            <p>{todo.content}</p>
-            <button onClick={() => removeTodo(todo.id)}>삭제하기</button>
-            <button onClick={() => completeTodo(todo.id)}>완료</button>
-          </div>
-        ))}
-      </ul>
-      <p>Done</p>
-      {/* 완료된 라벨이 들어와야 함 */}
-      {todo.map((todo) => (
-        <div key={todo.id}>
-          {todo.title}
-          <p>{todo.content}</p>
-        </div>
-      ))}
+      <div className="layout">
+        <p className="title">my todo list</p>
+        <form onSubmit={addTodo} className="form">
+          제목{" "}
+          <input
+            type="text"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+          />
+          내용
+          <input
+            type="text"
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+          />
+          <button type="submit">추가하기</button>
+        </form>
+
+        <p className="todo-title1">Working</p>
+        <ul>
+          {todos
+            .filter((todo) => !todo.isDone)
+            .map((todo) => (
+              <div key={todo.id}>
+                <h3>{todo.title}</h3>
+                <p>{todo.content}</p>
+                <button onClick={() => removeTodo(todo.id)}>삭제하기</button>
+                <button onClick={() => toggleTodo(todo.id)}>완료</button>
+              </div>
+            ))}
+        </ul>
+
+        <p className="todo-title2">Done</p>
+        <ul>
+          {todos
+            .filter((todo) => todo.isDone)
+            .map((todo) => (
+              <div key={todo.id}>
+                <h3>{todo.title}</h3>
+                <p>{todo.content}</p>
+                <button onClick={() => removeTodo(todo.id)}>삭제하기</button>
+                <button onClick={() => toggleTodo(todo.id)}>취소</button>
+              </div>
+            ))}
+        </ul>
+      </div>
     </>
   );
 }
